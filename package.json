@@ -1,0 +1,24 @@
+{
+  "name": "khriss",
+  "version": "1.0.0",
+  "description": "A server for Khriss",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idanstark42/khriss.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/idanstark42/khriss/issues"
+  },
+  "homepage": "https://github.com/idanstark42/khriss#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "node-html-parser": "^6.1.13"
+  }
+}
