@@ -15,12 +15,16 @@ module.exports = function search (req, res) {
     })
 }
 
+// ARCANUM
+
 const ARCANUM_URL = 'https://wob.coppermind.net/adv_search/'
 
 async function searchArcanum (searchTerm) {
   const entriesInPage = pageHTML => {
     const elements = pageHTML.querySelectorAll('.entry-content')
-    return elements.map(element => element.textContent)
+    return elements
+      .map(element => element.textContent)
+      .map(text => text.replace(/\s+/g, ' ').trim())
   }
 
   const loadPageHTML = async page => {
@@ -44,14 +48,16 @@ async function searchArcanum (searchTerm) {
 
 // COPPERMIND
 
-const COPPERMIND_URL = 'https://coppermind.net/w/api.php'
+const COPPERMIND_API_URL = 'https://coppermind.net/w/api.php'
+const COPPERMIND_WIKI_URL = 'https://coppermind.net/wiki/w/api.php'
 
 async function searchCoppermind (searchTerm) {
-  const pages = (await request(`${COPPERMIND_URL}?action=opensearch&search=${searchTerm}`, 'json'))[1]
+  const pages = (await request(`${COPPERMIND_API_URL}?action=opensearch&search=${searchTerm}`, 'json'))[1]
   console.log('Found %d wiki pages', pages.length)
   const contents = []
   for (const page of pages) {
-    const content = await request(`${COPPERMIND_URL}?action=raw&title=${page}`)
+    if (page.includes('Gallery')) continue
+    const content = await request(`${COPPERMIND_WIKI_URL}?action=raw&title=${page}`)
     contents.push(content)
   }
   return contents
