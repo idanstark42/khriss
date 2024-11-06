@@ -1,12 +1,17 @@
+const router = require('express').Router()
 const { parse } = require('node-html-parser')
 
-module.exports = function search (req, res) {
+router.use((req, res, next) => {
   const term = req.query.term
   if (!term) {
     res.status(400).send('Missing term')
     return
   }
+  next()
+})
 
+router.get('/all', (req, res) => {
+  const term = req.query.term
   Promise.all([searchArcanum(term), searchCoppermind(term)])
     .then(([arcanum, coppermind]) => res.json({ arcanum, coppermind }))
     .catch(error => {
@@ -14,6 +19,29 @@ module.exports = function search (req, res) {
       res.status(500).send('An error occurred')
     })
 }
+)
+
+router.get('/arcanum', (req, res) => {
+  const term = req.query.term
+  searchArcanum(term)
+    .then(entries => res.json(entries))
+    .catch(error => {
+      console.error(error)
+      res.status(500).send('An error occurred')
+    })
+})
+
+router.get('/coppermind', (req, res) => {
+  const term = req.query.term
+  searchCoppermind(term)
+    .then(pages => res.json(pages))
+    .catch(error => {
+      console.error(error)
+      res.status(500).send('An error occurred')
+    })
+})
+
+module.exports = router
 
 // ARCANUM
 
