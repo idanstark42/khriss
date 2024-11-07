@@ -1,53 +1,16 @@
-const router = require('express').Router()
 const { parse } = require('node-html-parser')
 
-router.use((req, res, next) => {
-  const term = req.query.term
-  if (!term) {
-    res.status(400).send('Missing term')
-    return
-  }
-  next()
-})
+const { summarize } = require('./nazh')
 
-router.get('/all', (req, res) => {
-  const term = req.query.term
-  Promise.all([searchArcanum(term), searchCoppermind(term)])
-    .then(([arcanum, coppermind]) => res.json({ arcanum, coppermind }))
-    .catch(error => {
-      console.error(error)
-      res.status(500).send('An error occurred')
-    })
+async function all (searchTerm, shouldSummarizeArcanum, shouldSummarizeCoppermind) {
+  return Promise.all([searchArcanum(searchTerm, shouldSummarizeArcanum), searchCoppermind(searchTerm, shouldSummarizeCoppermind)])
 }
-)
-
-router.get('/arcanum', (req, res) => {
-  const term = req.query.term
-  searchArcanum(term)
-    .then(entries => res.json(entries))
-    .catch(error => {
-      console.error(error)
-      res.status(500).send('An error occurred')
-    })
-})
-
-router.get('/coppermind', (req, res) => {
-  const term = req.query.term
-  searchCoppermind(term)
-    .then(pages => res.json(pages))
-    .catch(error => {
-      console.error(error)
-      res.status(500).send('An error occurred')
-    })
-})
-
-module.exports = router
 
 // ARCANUM
 
 const ARCANUM_URL = 'https://wob.coppermind.net/adv_search/'
 
-async function searchArcanum (searchTerm) {
+async function searchArcanum (searchTerm, shouldSummarize) {
   const entriesInPage = pageHTML => {
     const elements = pageHTML.querySelectorAll('.entry-content')
     return elements
@@ -70,7 +33,12 @@ async function searchArcanum (searchTerm) {
   const numberOfPages = Math.ceil(numberOfEntries / 50)
   console.log('Found %d WOB entries in %d pages', numberOfEntries, numberOfPages)
   const pagesEtnries = await Promise.all([...Array(numberOfPages).keys()].map(async page => await entriesInPage(await loadPageHTML(page + 1))))
-  return pagesEtnries.flat()
+  const entries = pagesEtnries.flat().join('\n\n')
+
+  if (shouldSummarize) {
+    return await summarize(entries, searchTerm)
+  }
+  return entries
 }
 
 
@@ -79,7 +47,7 @@ async function searchArcanum (searchTerm) {
 const COPPERMIND_API_URL = 'https://coppermind.net/w/api.php'
 const COPPERMIND_WIKI_URL = 'https://coppermind.net/wiki/w/api.php'
 
-async function searchCoppermind (searchTerm) {
+async function searchCoppermind (searchTerm, shouldSummarize) {
   const pages = (await request(`${COPPERMIND_API_URL}?action=opensearch&search=${searchTerm}`, 'json'))[1]
   console.log('Found %d wiki pages', pages.length)
   const contents = []
@@ -87,6 +55,10 @@ async function searchCoppermind (searchTerm) {
     if (page.includes('Gallery')) continue
     const content = await request(`${COPPERMIND_WIKI_URL}?action=raw&title=${page}`)
     contents.push(content)
+  }
+
+  if (shouldSummarize) {
+    return await summarize(contents.join('\n\n'), searchTerm)
   }
   return contents
 }
@@ -97,3 +69,5 @@ async function request (url, action = 'text') {
   const data = await response[action]()
   return data
 }
+
+module.exports = { all, searchArcanum, searchCoppermind }
