@@ -14,6 +14,23 @@ body {
   background-attachment: fixed;
 }
 
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ffffffaa;
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #000000aa;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ffffff;
+}
+
 #messenger {
   width: 100%;
   height: 100%;
@@ -33,6 +50,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background: #00000077
 }
 
 #suggestions {
@@ -75,10 +93,7 @@ body {
 }
 
 #messages > * {
-  max-width: 70%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  max-width: 80%;
 
   color: #ffffffaa;
   border: 3px solid #ffffffaa;
@@ -88,15 +103,16 @@ body {
 }
 
 #messages .user {
-  justify-content: flex-end;
   align-self: flex-end;
   background-color: #000000aa;
 }
 
-#messages .system {
-  justify-content: flex-start;
+#messages .assistant {
   align-self: flex-start;
-  background-color: #000000aa;
+  background: none;
+  border: none;
+  text-align: justify;
+  line-height: 1.5rem;
 }
 
 #input {

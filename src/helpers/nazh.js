@@ -36,7 +36,9 @@ function chunk (text, chunkSize) {
 
 function instruction (text, focusTerm) {
   return `I'm going to give youa text and you should summarize it, focusing on a specific search term.
-    The text is a bunch of Q&A from the Arcanum.
-    You should select the most relevant parts and summarize them.
+    The text is either a bunch of Q&A from the Arcanum or an article from the Coppermind wiki.
+    You should select only the relevant parts and summarize them.
+    If any part of the text is irrelevant, ignore it.
+    If the entire text is irrelevant, return "undefined".
     The search term is: ${focusTerm}.`
 }
