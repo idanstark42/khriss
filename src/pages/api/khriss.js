@@ -1,6 +1,8 @@
 const OpenAI = require('openai')
 const search = require('../../helpers/search')
 
+const { meaning } = require('../../helpers/codephrases')
+
 export default async function handler(req, res) {
   try {
     res.status(200).json(await respond(req.body.messages))
@@ -10,7 +12,22 @@ export default async function handler(req, res) {
 }
 
 const respond = async (messages) => {
-  ([{ role: 'system', content: INSTRUCTIONS }, ...messages])
+  const lastUserMessage = messages.find(({ role }) => role === 'user').content
+  const meaning = await meaning(lastUserMessage)
+  if (meaning) {
+    if (meaning.type === 'auto-response') {
+      return { role: 'system', content: meaning }
+    } else if (meaning.type === 'command') {
+      const command = meaning.command
+      const target = meaning.target
+      const text = lastUserMessage.trim()
+      // keywords take the shape [bla]. For instance: Give me a trivia about [topic]. Then the ussage would be: Give me a trivia about Hoid.
+      const regex = new RegExp(command.replace(/\[.*?\]/g, group => `(?<${group.replace(/[\[\]]/g, '')}>.*)`))
+      const values = text.match(regex).groups
+      messages.find(({ role }) => role === 'user').content = Object.entries(values).reduce((acc, [value, key]) => acc.replaceAll(`[${key}]`, value), target)
+    }
+  }
+
   const runner = new OpenAI().beta.chat.completions.runTools({
     model: process.env.OPENAI_MODEL,
     messages: [{ role: 'system', content: INSTRUCTIONS }, ...messages],
