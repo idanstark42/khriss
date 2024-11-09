@@ -38,10 +38,8 @@ export default function Conversation () {
       {Conversation.SUGGESTIONS.map(suggestion => <div key={suggestion} className='suggestion' onClick={() => submit(suggestion)}>{suggestion}</div>)}
     </div>}
     <div id='input'>
-      <input type='text' id='message' value={input} onChange={e => setInput(e.target.value)} />
-      <div id='send'
-        onClick={() => submit()}
-        onKeyDown={e => e.key === 'Enter' && submit()} >
+      <input type='text' id='message' value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' ? submit() : null} />
+      <div id='send' onClick={() => submit()} >
         <LuSendHorizonal />
       </div>
     </div>

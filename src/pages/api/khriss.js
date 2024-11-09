@@ -1,7 +1,7 @@
 const OpenAI = require('openai')
 const search = require('../../helpers/search')
 
-const { meaning } = require('../../helpers/codephrases')
+const { getMeaning } = require('../../helpers/codephrases')
 
 export default async function handler(req, res) {
   try {
@@ -13,10 +13,10 @@ export default async function handler(req, res) {
 
 const respond = async (messages) => {
   const lastUserMessage = messages.find(({ role }) => role === 'user').content
-  const meaning = await meaning(lastUserMessage)
+  const meaning = await getMeaning(lastUserMessage)
   if (meaning) {
     if (meaning.type === 'auto-response') {
-      return { role: 'system', content: meaning }
+      return { role: 'system', content: meaning.response }
     } else if (meaning.type === 'command') {
       const command = meaning.command
       const target = meaning.target
@@ -27,6 +27,8 @@ const respond = async (messages) => {
       messages.find(({ role }) => role === 'user').content = Object.entries(values).reduce((acc, [value, key]) => acc.replaceAll(`[${key}]`, value), target)
     }
   }
+
+  throw new Error('I am sorry, I do not understand the question.')
 
   const runner = new OpenAI().beta.chat.completions.runTools({
     model: process.env.OPENAI_MODEL,
