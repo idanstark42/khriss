@@ -28,8 +28,6 @@ const respond = async (messages) => {
     }
   }
 
-  throw new Error('I am sorry, I do not understand the question.')
-
   const runner = new OpenAI().beta.chat.completions.runTools({
     model: process.env.OPENAI_MODEL,
     messages: [{ role: 'system', content: INSTRUCTIONS }, ...messages],
