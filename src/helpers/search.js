@@ -3,17 +3,15 @@ const { parse } = require('node-html-parser')
 const { summarize } = require('./nazh')
 
 async function all (searchTerm) {
-  return await Promise.all([searchArcanum(searchTerm), searchCoppermind(searchTerm)])
-    .then(([arcanum, coppermind]) => {
-      let sources = []
-      if (arcanum.sources) sources = [...sources, arcanum.sources]
-      if (coppermind.sources) sources = [...sources, coppermind.sources]
-      return {
-        arcanum: arcanum.summary || arcanum,
-        coppermind: coppermind.summary || coppermind,
-        sources
-      }
-    })
+  const [arcanumData, coppermindData] = await Promise.all([arcanum(searchTerm), coppermind(searchTerm)])
+  let sources = []
+  if (arcanumData.sources) sources = [...sources, arcanumData.sources]
+  if (coppermindData.sources) sources = [...sources, coppermindData.sources]
+  return {
+    arcanum: arcanumData.summary || arcanumData,
+    coppermind: coppermindData.summary || coppermindData,
+    sources
+  }
 }
 
 // ARCANUM

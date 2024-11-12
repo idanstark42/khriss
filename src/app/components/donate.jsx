@@ -14,7 +14,7 @@ export default function AddPhraseForm () {
       <button onClick={() => window.open('https://www.buymeacoffee.com/idanstark', '_blank')}>Buy me a coffee</button>
     </div>
     <div>
-      <h4>Or you can donate directly to Khriss AI, and you will get to add a codephrase.</h4>
+      <h4>Or you can donate directly to Khriss AI, and you will get to add a secret codephrase.</h4>
     </div>
   </div>
 }
