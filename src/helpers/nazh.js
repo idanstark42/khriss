@@ -3,12 +3,14 @@ const OpenAI = require('openai')
 exports.summarize = async (text, focusTerm) => {
   const chunks = chunk(text, 10000)
   const summaries = await Promise.all(chunks.map(chunk => summarizeChunk(chunk, focusTerm)))
-  return summaries.map(summary => summary.choices[0].message.content).join('\n')
+  // print the amount of tokens used
+  const tokens = summaries.reduce((acc, summary) => acc + summary.usage.total_tokens, 0)
+  return [summaries.map(summary => summary.choices[0].message.content).join('\n'), tokens]
 }
 
 async function summarizeChunk (text, focusTerm) {
   return await new OpenAI().chat.completions.create({
-    model: process.env.OPENAI_MODEL,
+    model: process.env.NAZH_OPENAI_MODEL,
     messages: [
       { role: 'system', content: instruction(text, focusTerm) },
       { role: 'user', content: text }

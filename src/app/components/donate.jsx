@@ -11,7 +11,7 @@ export default function AddPhraseForm () {
         </div>
     </div>
     <div className='donate-buttons' style={{ display: 'flex', gap: '1rem', justifyContent: 'space-evenly' }}>
-      <button onClick={() => window.open('https://www.buymeacoffee.com/idanstark', '_blank')}>Buy me a coffee</button>
+      <button onClick={() => window.open('https://www.buymeacoffee.com/idanstark42', '_blank')}>Buy me a coffee</button>
     </div>
     <div>
       <h4>Or you can donate directly to Khriss AI, and you will get to add a secret codephrase.</h4>
