@@ -10,6 +10,7 @@ export default function Conversation() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [allowInput, setAllowInput] = useState(true)
+  const [useArcanum, setUseArcanum] = useState(false)
   const messagesEndRef = useRef(null) // Ref for scrolling
 
   // Function to scroll to the latest message
