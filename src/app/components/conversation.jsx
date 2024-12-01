@@ -27,7 +27,7 @@ export default function Conversation() {
       setMessages([...messages, lastMessage])
       setLastMessage(undefined)
     }
-  }, [lastMessage])
+  }, [lastMessage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const submit = async (message) => {
     if (!message) {
